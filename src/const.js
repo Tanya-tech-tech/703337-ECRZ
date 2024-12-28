@@ -1,12 +1,14 @@
+export const NUMBER_CARDS_ON_PAGE = 12;
+
 export const TYPES = {
   flats: {
     type:'Квартиры',
-    value: ['1-к.квартиры', '2-к.квартиры', '3-к.квартиры', '4-к.квартиры', 'Комнаты в квартирах'],
+    value: ['1-к.квартиры', '2-к.квартиры'],//'3-к.квартиры', '4-к.квартиры', 'Комнаты в квартирах'
     meaning: 'Кол-во комнат',
   },
-  hauses: {
+  houses: {
     type:'Дома',
-    value: ['Дом', 'Часть дома', 'Дачи'],
+    value: ['Жилой дом', 'Садовый дом'],
     meaning: 'Тип строения',
   },
   plots: {
@@ -27,11 +29,17 @@ export const TYPES = {
   
 };
 
-export const FLATS = ['1-к.квартиры', '2-к.квартиры', '3-к.квартиры', '4-к.квартиры', 'Комнаты в квартирах'];
+export const FLATS = {
+  '1-к.квартиры': 'ONE_ROOM',
+  '2-к.квартиры': 'TWO_ROOM',
+};
 
 export const PLOTS = ['Участки до 10сот.', 'Участки до 20сот.', 'Участки ИЖС', 'Участки Промназначения', 'Все объекты'];
 
-export const HAUSES = ['Дома', 'Часть дома', 'Дачи'];
+export const HOUSES = {
+  'Жилой дом': 'RESIDENTIAL',
+  'Садовый дом': 'GARDEN%20',
+};
 
 export const COMMERCIAL = ['Офисы', 'Склады', 'Свободное назначение', 'Все объекты'];
 
@@ -48,3 +56,7 @@ export const getKeyObj = (arr, value) => {
   const key = Object.keys(arr).find(k => arr[k] === value);
   return key;
 }
+
+export const BACKEND_URL = 'https://ecrz-back.onrender.com';
+export const END_POINT = '/apartments';
+

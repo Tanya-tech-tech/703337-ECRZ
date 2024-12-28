@@ -10,7 +10,7 @@ function NavHeader({onListItemAdd}) {
   const [type, setType] = useState('');
   const [optionsOpen, setOptionsOpen] = useState({
     flats: false,
-    hauses: false,
+    houses: false,
     plots: false,
     comm: false,
     services: false,

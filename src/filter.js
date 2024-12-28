@@ -1,16 +1,16 @@
 import arrowDown from './img/arrowDown.svg';
-import { TYPES, HAUSES, PLOTS, COMMERCIAL, SERVICES } from './const';
+import { TYPES } from './const';
 import { useState } from 'react';
 import cn from 'classnames';
-import { Link } from 'react-router-dom';
+import { BACKEND_URL, FLATS, HOUSES } from './const';
 
-function Filter({typeObj, onListItemChange}) {
+function Filter({typeObj, onListItemChange, onChangeCountPage, onChangeType, onChangeCurrentPage, onChangeSubType}) {
   const shortcutName = 'Коммерческая';
   const longType = 'comm';
   const outFilter = 'services';
   const arrTypes = Object.keys(TYPES).filter((item) => item !== outFilter);
   let current ='';
-  
+  const endPoint = typeObj.typeValue === Object.keys(TYPES)[0] ? '/apartments' : '/houses';
 
   const [optionsOpen, setOptionsOpen] = useState({
     types: false,
@@ -41,13 +41,52 @@ function Filter({typeObj, onListItemChange}) {
   };
 
   const handleItemTypeClick = (type) => {
+    console.log(type)
+    let responce;
     typeObj.typeValue = type;
     typeObj.subject = '';
+    if(type === Object.keys(TYPES)[0]){
+      responce = async() => await fetch(`${BACKEND_URL}${endPoint}?page=1`)
+      .then((response) => response.json())
+      .then((json) => {
+        console.log(json)
+        onChangeCountPage(json.totalPages);
+        onListItemChange(json.entities);
+        onChangeType({
+          typeValue: type,
+          subject: '',
+        });
+      });
+    } else if(type === Object.keys(TYPES)[1]){
+      responce = async() => await fetch(`${BACKEND_URL}/houses`)
+      .then((response) => response.json())
+      .then((json) => {
+        console.log(json)
+        onChangeCountPage(json.totalPages);
+        onListItemChange(json.entities);
+        onChangeType({
+          typeValue: type,
+          subject: '',
+        });
+      });
+    }
+    responce();
+    onChangeCurrentPage(1);
   }
 
   const handleItemSubClick = (sub) => {    
     typeObj.subject = sub;
-
+    const subType = typeObj.typeValue === Object.keys(TYPES)[0] ? 'rooms' : 'houseType';
+    const subValue = subType === 'rooms' ? FLATS[sub] : HOUSES[sub];
+    const responce = async() => await fetch(`${BACKEND_URL}${endPoint}?${subType}=${subValue}&page=1`)
+    .then((response) => response.json())
+    .then((json) => {
+      console.log(json);
+      onChangeCountPage(json.totalPages);
+      onListItemChange(json.entities);
+      onChangeSubType({sub: subType, value: subValue});
+    });
+    responce();
   }
 
   return (
@@ -55,18 +94,15 @@ function Filter({typeObj, onListItemChange}) {
     <div className="catalog-filter" >
 
       <section className="catalog-info">
-
         <div className="breadcrumbs">
           <div className="breadcrumbs-container">
             <ul className="breadcrumbs__list">
               <li className="breadcrumbs__item">
-                Главная /
-                
+                Главная /                
               </li>
 
               <li className="breadcrumbs__item">
-                Купить 1-комн. квартиру                
-                
+                Купить 1-комн. квартиру
               </li>
             </ul>
           </div>
@@ -132,8 +168,6 @@ function Filter({typeObj, onListItemChange}) {
             </div>
           )
         }
-
-        
 
         <div className="catalog-filter__block catalog-filter__block--btn">
           <div className="block-btn__wrapper">

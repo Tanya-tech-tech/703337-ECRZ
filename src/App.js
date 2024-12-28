@@ -6,18 +6,40 @@ import { useState } from 'react';
 import { TYPES } from './const';
 import Footer from './footer';
 import Header from './header';
-import { mockArr } from './mock';
-//https://ru.hexlet.io/courses/html/lessons/github/theory_unit
-//https://ru.hexlet.io/blog/posts/kak-deploit-prilozhenie-na-render-gayd-dlya-frontenderov-i-bekenderov
 
+import { useEffect } from 'react';
+import { BACKEND_URL } from './const';
 
 function App() {
+  
   const [typeObj, setType] = useState({
     typeValue: Object.keys(TYPES)[0],
     subject: '',
   });
-  
 
+  const [numberPage, setNumberPage]= useState(1);
+  const [pages, setPages]= useState(1);
+  const [cards, setCards]= useState([]);
+  const [subType, setSubType]= useState({
+    sub: '',
+    value: '',
+  });
+
+  useEffect(() => {
+    
+    const endPoint = typeObj.typeValue === Object.keys(TYPES)[0] ? '/apartments' : '/houses';
+    const parameters = subType.sub !== '' ? `?${subType.sub}=${subType.value}&` : '?';
+    const responce = async() => await fetch(`${BACKEND_URL}${endPoint}${parameters}page=${numberPage}`)
+    .then((response) => response.json())
+    .then((json) => {
+      
+      setPages(json.totalPages);
+      setCards(json.entities);
+    });
+    responce();
+  }, [numberPage, typeObj.typeValue, subType.sub, subType.value]);
+
+    
   const handleAddItem = (item, val) => {
     setType({
       typeValue: val,
@@ -30,13 +52,13 @@ function App() {
     <>
       <Header onListItemAdd = {handleAddItem} />
       <main>
-        <Filter typeObj={typeObj} onListItemChange={handleAddItem}/>
+        <Filter typeObj={typeObj} onListItemChange={setCards} onChangeCountPage ={setPages} onChangeType={setType} onChangeCurrentPage={setNumberPage} onChangeSubType={setSubType}/>
         <div className="card__wrapper">
-          {mockArr.map((item, index) => <Card key={`${index}card`} cardObj={item}/>)}
+          {cards.map((item, index) => <Card key={`${item.id}card`} cardObj={item}/>)}
           
         </div>
       </main>
-      <Pagination />
+      <Pagination onChangePage={setNumberPage} sumPages={pages}/>
       <Footer />      
     </>
   );
